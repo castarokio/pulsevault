@@ -17,6 +17,26 @@ export default function App() {
   // Tab Routing State
   const [currentTab, setCurrentTab] = useState<'homepage' | 'storefront' | 'vault' | 'admin'>('homepage');
 
+  // Sync tab with URL hash for direct links
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (['homepage', 'storefront', 'vault', 'admin'].includes(hash)) {
+        setCurrentTab(hash as any);
+      }
+    };
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  // Update hash when tab changes
+  useEffect(() => {
+    if (window.location.hash !== `#${currentTab}`) {
+      window.location.hash = currentTab;
+    }
+  }, [currentTab]);
+
   // Global State
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
